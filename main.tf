@@ -91,6 +91,6 @@ resource "aws_security_group" "ptfe_sg" {
 }
 
 output "install_url" {
-  value = "http://${aws_instance.ptfe.public_dns}:8800"
+  value = "http://${aws_eip.ptfe.public_dns}:8800"
 }
 
