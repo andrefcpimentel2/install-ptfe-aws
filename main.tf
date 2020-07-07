@@ -76,8 +76,8 @@ resource "aws_security_group" "ptfe_sg" {
   }
 
   ingress {
-    from_port   = 9870
-    to_port     = 9880
+    from_port   = 3389
+    to_port     = 3389
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
