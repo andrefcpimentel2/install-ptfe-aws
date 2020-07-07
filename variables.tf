@@ -4,12 +4,13 @@ variable "region" {
   default     = "eu-west-2"
 }
 
-variable "ami" {
-  type        = map(string)
-  description = "A map of AMIs"
+data "aws_ami" "amazon_windows_2019" {
+  most_recent = true
+  owners      = ["amazon"]
 
-  default = {
-    eu-west-2 = "ami-6b3fd60c"
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2019-English-Core-Base-*"]
   }
 }
 
