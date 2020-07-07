@@ -9,7 +9,7 @@ data "http" "myipaddr" {
 
 
 resource "aws_instance" "ptfe" {
-  ami           = data.aws_ami.amazon_windows_2012R2.image_id
+  ami           = data.aws_ami.amazon_windows_2019.image_id
   instance_type = var.instance_type
   key_name      = var.key_name
   
