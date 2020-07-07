@@ -19,6 +19,10 @@ variable "instance_type" {
   default     = "t2.large"
 }
 
+variable "admin_password" {
+ 
+}
+
 variable "tag_name" {
   description = "the Value you want to appear in the Name Tag"
   default     = "My Demo Instance ptfe"
