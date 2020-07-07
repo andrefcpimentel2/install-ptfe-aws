@@ -15,7 +15,7 @@ resource "aws_instance" "ptfe" {
   
   connection {
     type     = "winrm"
-    user     = "Administrator"
+    user     = var.admin_username
     password = var.admin_password
 
     # set from default of 5m to 10m to avoid winrm timeout
