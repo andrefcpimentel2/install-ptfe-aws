@@ -23,6 +23,11 @@ variable "admin_password" {
  
 }
 
+
+variable "admin_username" {
+ default     = "hashicorp"
+}
+
 variable "tag_name" {
   description = "the Value you want to appear in the Name Tag"
   default     = "My Demo Instance ptfe"
