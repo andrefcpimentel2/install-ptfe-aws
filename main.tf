@@ -132,3 +132,7 @@ output "publicdns" {
   value = aws_eip.ptfe.public_dns
 }
 
+output "publicip" {
+  value = aws_eip.ptfe.public_ip 
+}
+
