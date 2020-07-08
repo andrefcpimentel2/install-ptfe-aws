@@ -14,7 +14,6 @@ echo "" > _INIT_STARTED_
 net user ${var.admin_username} /add /y
 net user ${var.admin_username} ${var.admin_password}
 net localgroup administrators ${var.admin_username} /add
-echo ${base64encode(file("./test.txt"))} > tmp2.b64 && certutil -decode tmp2.b64 C:/test.txt
 echo "" > _INIT_COMPLETE_
 </script>
 <persist>false</persist>
