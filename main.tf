@@ -7,29 +7,11 @@ data "http" "myipaddr" {
 }
 
 
-data "template_file" "windows" {
-  template = file("${path.module}/scripts/custom_data.ps1")
-
-  vars = {
-    admin_username = var.admin_username
-    admin_password = var.admin_password
-  }
-}
-
 
 resource "aws_instance" "ptfe" {
   ami           = data.aws_ami.amazon_windows_2019.image_id
   instance_type = var.instance_type
   key_name      = var.key_name
-  
-  connection {
-    type     = "winrm"
-    user     = var.admin_username
-    password = var.admin_password
-
-    # set from default of 5m to 10m to avoid winrm timeout
-    timeout = "10m"
-  }
   
   user_data = <<EOF
   
