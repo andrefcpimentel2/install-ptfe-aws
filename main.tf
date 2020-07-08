@@ -7,17 +7,13 @@ data "http" "myipaddr" {
 }
 
 
-data "template_file" "userdata_win" {
-  template = <<EOF
-<script>
-echo "" > _INIT_STARTED_
-net user ${var.admin_username} /add /y
-net user ${var.admin_username} ${var.admin_password}
-net localgroup administrators ${var.admin_username} /add
-echo "" > _INIT_COMPLETE_
-</script>
-<persist>false</persist>
-EOF
+data "template_file" "windows" {
+  template = file("${path.module}/scripts/custom_data.ps1")
+
+  vars = {
+    admin_username = var.admin_username
+    admin_password = var.admin_password
+  }
 }
 
 
@@ -35,7 +31,36 @@ resource "aws_instance" "ptfe" {
     timeout = "10m"
   }
   
-  user_data = data.template_file.userdata_win.rendered
+  user_data = <<EOF
+  
+Start-Transcript -Path C:\Deploy.Log
+Write-Host "Setup WinRM for $RemoteHostName"
+net user ${var.admin_username} '${var.admin_password}' /add /y
+net localgroup administrators ${var.admin_username} /add
+Write-Host "quickconfigure  WinRM"
+winrm quickconfig -q
+winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="300"}'
+winrm set winrm/config '@{MaxTimeoutms="1800000"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+winrm set winrm/config/service/auth '@{Basic="true"}'
+Write-Host "Open Firewall Port for WinRM"
+netsh advfirewall firewall add rule name="Windows Remote Management (HTTP-In)" dir=in action=allow protocol=TCP localport=$WinRmPort
+netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
+netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localport=5986 action=allow
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+Write-Host "configure WinRM as a Service"
+net stop winrm
+sc.exe config winrm start=auto
+net start winrm
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+choco feature enable -n allowGlobalConfirmation  
+choco install curl 
+choco install firefox
+choco install vault
+
+Stop-Transcript
+
+EOF
 
 
   ebs_block_device {
